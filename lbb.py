@@ -4,7 +4,8 @@ import pandas as pd
 import streamlit as st
 import plotly.express as px 
 from ydata_profiling import ProfileReport
-from streamlit_gsheets import GSheetsConnection
+#from streamlit_gsheets import GSheetsConnection
+import gspread
 from streamlit_pandas_profiling import st_profile_report
 
 # -----------------------CONFIG-----------------------------
@@ -187,3 +188,18 @@ if st.sidebar.button("Start Profiling Data"):
     
 else:
     st.info('''Click "Start Profiling Data" button in the left sidebar to generate data report''')
+
+# Add cached function and download button
+@st.cache_data
+def convert_df(df):
+    # IMPORTANT: Cache the conversion to prevent computation on every rerun
+    return df.to_csv().encode("utf-8")
+
+csv = convert_df(df)
+
+st.sidebar.download_button(
+    label="Download raw data as CSV",
+    data=csv,
+    file_name="nyayur.csv",
+    mime="text/csv",
+)
