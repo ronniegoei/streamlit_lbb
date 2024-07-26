@@ -4,8 +4,7 @@ import pandas as pd
 import streamlit as st
 import plotly.express as px 
 from ydata_profiling import ProfileReport
-#from streamlit_gsheets import GSheetsConnection
-import gspread
+from streamlit_gsheets import GSheetsConnection
 from streamlit_pandas_profiling import st_profile_report
 
 # -----------------------CONFIG-----------------------------
@@ -25,7 +24,7 @@ df_raw = conn.read(
 )
 
 ## Simple data cleanup
-df_raw.drop(['No', 'Nama Toko'], axis=1, inplace = True) #pake "inplace=True" supaya ga perlu diassign ke variable baru lagi
+df_raw = df_raw.drop(['No', 'Nama Toko'], axis=1) #pake "inplace=True" supaya ga perlu diassign ke variable baru lagi
 
 # Drop rows where the 'Nama Barang' column contains any of the substrings 'Pete Kupas' or 'Pete Papan'
 pattern = '|'.join(['Pete Kupas', 'Pete Papan'])
