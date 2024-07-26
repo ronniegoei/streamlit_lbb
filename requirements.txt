@@ -5,5 +5,4 @@ st-gsheets-connection
 ydata_profiling
 numba==0.58.1
 pulp
-time
 plotly
