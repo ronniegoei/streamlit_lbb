@@ -6,6 +6,8 @@ import plotly.express as px
 from ydata_profiling import ProfileReport
 from streamlit_gsheets import GSheetsConnection
 from streamlit_pandas_profiling import st_profile_report
+from streamlit.runtime.caching import cache_data
+from streamlit.type_util import convert_anything_to_df, is_dataframe_compatible
 
 # -----------------------CONFIG-----------------------------
 st.set_page_config(
