@@ -1,0 +1,6 @@
+streamlit
+gspread
+pandas
+plotly
+pulp
+ydata-profiling
