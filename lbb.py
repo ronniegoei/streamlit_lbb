@@ -1,10 +1,10 @@
 import time
 import pulp
-import pandas as pd
-import streamlit as st
 import plotly.express as px 
-from ydata_profiling import ProfileReport
+import streamlit as st
 from streamlit_gsheets import GSheetsConnection
+import pandas as pd
+from ydata_profiling import ProfileReport
 from streamlit_pandas_profiling import st_profile_report
 
 # -----------------------CONFIG-----------------------------
@@ -16,30 +16,27 @@ st.set_page_config(
 )
 
 ## Read Data
-conn = st.connection("gsheets", type = GSheetsConnection)
+conn = st.connection("gsheets", type=GSheetsConnection)
 
-df_raw = conn.read(
-    spreadsheet = st.secrets.gsheet_promotion["spreadsheet"],
-    worksheet = st.secrets.gsheet_promotion["worksheet"]
+df = conn.read(
+    spreadsheet=st.secrets.gsheet_promotion["spreadsheet"],
+    worksheet=st.secrets.gsheet_promotion["worksheet"]
 )
 
 ## Simple data cleanup
-df_raw.drop(['No', 'Nama Toko'], axis=1, inplace = True) #pake "inplace=True" supaya ga perlu diassign ke variable baru lagi
+# Drop unnecessary columns
+df.drop(columns=['No', 'Nama Toko'], inplace=True)
 
-# Drop rows where the 'Nama Barang' column contains any of the substrings 'Pete Kupas' or 'Pete Papan'
-pattern = '|'.join(['Pete Kupas', 'Pete Papan'])
-df_dropped = df_raw[~df_raw['Nama Barang'].str.contains(pattern, case=False, na=False)]
-df_dropped.reset_index(drop=True, inplace=True)
+# Drop rows with specific substrings in 'Nama Barang' and reset index
+pattern = 'Pete Kupas|Pete Papan'
+df = df[~df['Nama Barang'].str.contains(pattern, case=False, na=False)].reset_index(drop=True)
+
 # Set the index to start from 1
-df_dropped.index = df_dropped.index + 1
+df.index = df.index + 1
 
-df = df_dropped
-# Convert 'Ratio Harga per 100 Gram' to numeric, coerce errors to NaN
-df['Ratio Harga per 100 Gram'] = pd.to_numeric(df['Ratio Harga per 100 Gram'], errors='coerce')
-df['Berat (Gram)'] = pd.to_numeric(df['Berat (Gram)'], errors='coerce')
-df['Harga'] = pd.to_numeric(df['Harga'], errors='coerce')
-
-# Drop rows where the 'Nama Barang' column contains any of the substrings 'Pete Kupas' or 'Pete Papan'
+# Convert columns to numeric, coerce errors to NaN
+numeric_columns = ['Ratio Harga per 100 Gram', 'Berat (Gram)', 'Harga']
+df[numeric_columns] = df[numeric_columns].apply(pd.to_numeric, errors='coerce')
 
 
 # ------------------------ Judul Dashboard-------------------
@@ -187,18 +184,3 @@ if st.sidebar.button("Start Profiling Data"):
     
 else:
     st.info('''Click "Start Profiling Data" button in the left sidebar to generate data report''')
-
-# Add cached function and download button
-@st.cache_data
-def convert_df(df):
-    # IMPORTANT: Cache the conversion to prevent computation on every rerun
-    return df.to_csv().encode("utf-8")
-
-csv = convert_df(df)
-
-st.sidebar.download_button(
-    label="Download raw data as CSV",
-    data=csv,
-    file_name="nyayur.csv",
-    mime="text/csv",
-)
