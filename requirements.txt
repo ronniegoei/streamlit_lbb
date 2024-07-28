@@ -4,5 +4,5 @@ pandas
 st-gsheets-connection
 ydata_profiling
 numba==0.58.1
-pulp
+pulp==2.9.0
 plotly
