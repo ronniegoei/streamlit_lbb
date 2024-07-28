@@ -25,11 +25,12 @@ df = conn.read(
 
 ## Simple data cleanup
 # Drop unnecessary columns
-df.drop(columns=['No', 'Nama Toko'], inplace=True)
+# df.drop(columns=['No', 'Nama Toko'], inplace=True)
+df = df.drop(columns='Nama Toko')
 
 # Drop rows with specific substrings in 'Nama Barang' and reset index
-pattern = 'Pete Kupas|Pete Papan'
-df = df[~df['Nama Barang'].str.contains(pattern, case=False, na=False)].reset_index(drop=True)
+# pattern = 'Pete Kupas|Pete Papan'
+# df = df[~df['Nama Barang'].str.contains(pattern, case=False, na=False)].reset_index(drop=True)
 
 # Set the index to start from 1
 df.index = df.index + 1
